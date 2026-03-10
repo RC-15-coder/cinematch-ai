@@ -1,0 +1,308 @@
+{% extends 'recommend/base.html'%}
+{% block title %}{{movies.title}}{% endblock %}
+
+{% block body %}
+<style>
+    .detail-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 60px;
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 0 20px;
+        align-items: flex-start;
+    }
+
+    .poster-section {
+        flex: 0 0 320px;
+    }
+
+    .poster-section img {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 40px rgba(229, 9, 20, 0.15);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .info-section {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .movie-title-large {
+        font-size: 3.2rem;
+        font-weight: 800;
+        margin-top: 0;
+        margin-bottom: 15px;
+        line-height: 1.1;
+        letter-spacing: -1px;
+    }
+
+    .movie-genre-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ddd;
+        padding: 6px 18px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .synopsis-text {
+        color: #bbb;
+        line-height: 1.8;
+        font-size: 16px;
+        margin-bottom: 40px;
+        text-align: justify;
+    }
+
+    .action-card {
+        background-color: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .action-card h4 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 10px;
+    }
+
+    .btn-netflix {
+        background: linear-gradient(90deg, #e50914, #b20710);
+        color: white !important;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 30px; 
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+        margin-top: 15px;
+        border: 1px solid transparent;
+    }
+
+    .btn-netflix:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(229, 9, 20, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-netflix-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: none;
+    }
+    
+    .btn-netflix-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Enlarged Rating Stars */
+    .star-rating {
+        font-size: 30px;
+        color: #555;
+        cursor: pointer;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    
+    .star-rating .fa-star {
+        color: #e50914; 
+        text-shadow: 0 0 10px rgba(229,9,20,0.4);
+    }
+
+    .watchlist-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        font-size: 16px;
+        color: #ddd;
+    }
+    
+    .watchlist-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: #e50914; 
+        cursor: pointer;
+    }
+
+    .alert-success {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1a472a;
+    color: #4ade80;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 1000;
+    border: 1px solid #166534;
+    animation: fadeOut 5s forwards; /* Fades out automatically */
+}
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+</style>
+
+{% if messages %}
+    <div style="max-width: 1100px; margin: 20px auto; padding: 0 20px;">
+        {% for message in messages %}
+            <div class="alert alert-success" style="background-color: rgba(30, 70, 32, 0.8); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 15px;">
+              <strong>Success!</strong> {{message}}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="detail-wrapper">
+
+    <div style="width: 100%; margin-bottom: 20px;">
+        <a href="javascript:void(0);" 
+   onclick="if(document.referrer === window.location.href || document.referrer.includes(window.location.pathname)) { window.history.go(-2); } else { window.history.back(); }" 
+   style="color: #fff; text-decoration: none; font-size: 16px; margin-bottom: 20px; display: inline-block;">
+   &#8592; Back to previous page
+</a>
+    </div>
+    
+    <div class="poster-section">
+        {% if movies.poster_url and movies.poster_url != 'None' %}
+            <img src="{{ movies.poster_url }}" 
+                 alt="{{ movies.title }}"
+                 onerror="this.onerror=null; this.src='https://placehold.co/300x450/141414/333333?text=No+Poster';">
+        {% else %}
+            <img src="https://placehold.co/300x450/141414/333333?text=No+Poster" alt="{{ movies.title }}">
+        {% endif %}
+    </div>
+
+    <div class="info-section">
+        <h1 class="movie-title-large">{{movies.title}}</h1>
+        {% if movies.genre and movies.genre != "None" and movies.genre != "" %}
+            <div class="movie-genre-badge">{{movies.genre}}</div>
+        {% endif %}
+        {% if movies.synopsis %}
+            <div class="synopsis-text">
+                <h4 style="color: #fff; font-weight: bold; margin-top: 0; margin-bottom: 10px; font-size: 1.2rem;">Overview</h4>
+                {{ movies.synopsis }}
+            </div>
+        {% endif %}
+
+        <div class="action-card">
+            <h4>Rate this Movie</h4>
+            <form role="search" method="post" action="{% url 'detail' movies.id %}" onsubmit="return validateForm()" name="ratingForm">
+                {% csrf_token %}
+                <div class="star-rating">
+                    <span class="fa fa-star-o" data-rating="1"></span>
+                    <span class="fa fa-star-o" data-rating="2"></span>
+                    <span class="fa fa-star-o" data-rating="3"></span>
+                    <span class="fa fa-star-o" data-rating="4"></span>
+                    <span class="fa fa-star-o" data-rating="5"></span>
+                    
+                    {% if rate_flag %}
+                        <input type="hidden" name="rating" class="rating-value" value="{{movie_rating}}" >
+                    {% else %}
+                        <input type="hidden" name="rating" class="rating-value" value="0">
+                    {% endif %}
+                </div>
+                <br>
+                <input type="submit" class="btn-netflix" value="Submit Rating">
+            </form>
+        </div>
+
+        <div class="action-card">
+            <h4>My Watchlist</h4>
+            <form role="search" method="post" action="{% url 'detail' movies.id %}">
+                {% csrf_token %}
+                <div>
+                    {% if update %}
+                        <label class="watchlist-label">
+                            <input type="checkbox" name="watch" checked class="watchlist-checkbox">
+                            <span>Currently in your Watchlist</span>
+                        </label>
+                        <input type="submit" class="btn-netflix btn-netflix-secondary" value="Remove from List" name="watch">
+                    {% else %}
+                        <label class="watchlist-label">
+                            <input type="checkbox" name="watch" class="watchlist-checkbox">
+                            <span>Add to Watchlist</span>
+                        </label>
+                        <input type="submit" class="btn-netflix" value="Add to List">
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.star-rating .fa');
+        const ratingInput = document.querySelector('.rating-value');
+        
+        // 1. Initialize stars if the user already has a rating saved
+        let currentRating = parseInt(ratingInput.value) || 0;
+        updateStars(currentRating);
+
+        // 2. Add click and hover listeners to every star
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+                ratingInput.value = rating; // Update the hidden form input
+                currentRating = rating;     // Save the new current rating
+                updateStars(rating);
+            });
+            
+            // Highlight stars as the mouse hovers over them
+            star.addEventListener('mouseover', function() {
+                const rating = this.getAttribute('data-rating');
+                updateStars(rating);
+            });
+            
+            // Return to the saved rating when the mouse leaves
+            star.addEventListener('mouseout', function() {
+                updateStars(currentRating);
+            });
+        });
+
+        // 3. The logic to dynamically swap empty and filled FontAwesome classes
+        function updateStars(rating) {
+            stars.forEach(star => {
+                const starRating = star.getAttribute('data-rating');
+                if (starRating <= rating) {
+                    star.classList.remove('fa-star-o');
+                    star.classList.add('fa-star');
+                } else {
+                    star.classList.remove('fa-star');
+                    star.classList.add('fa-star-o');
+                }
+            });
+        }
+    });
+
+    // 4. Form validation (Prevents submitting a 0-star rating)
+    function validateForm() {
+        const rating = document.querySelector('.rating-value').value;
+        if (rating == 0) {
+            alert('Please select a star rating before submitting.');
+            return false;
+        }
+        return true;
+    }
+</script>
+
+{% endblock %}

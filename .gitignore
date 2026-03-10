@@ -1,0 +1,38 @@
+# Sensitive files
+hugging face token for deploy.txt
+
+# Virtual environment
+.venv/
+
+# Database
+db.sqlite3
+db_backup.sqlite3
+
+# Large data files - both datasets excluded
+ml-100k.zip
+ml-latest-small.zip
+ml-100k/
+ml-latest-small/
+ml_data/
+
+# ML model data files (large, not needed to run site)
+ml_models/train_data.csv
+ml_models/test_data.csv
+
+# Media and images (loaded from TMDB API)
+media/
+website_images/
+
+# Hugging Face deployment folder (separate repo)
+cinematch-ai/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Reports folder
+reports/
+
+# Heroku file - not needed
+Procfile

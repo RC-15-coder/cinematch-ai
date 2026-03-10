@@ -1,0 +1,236 @@
+{% extends 'recommend/base.html' %}
+{% block body %}
+
+<style>
+
+    .search-input-container { flex: 1; position: relative; display: flex; }
+    .clear-btn {
+        position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+        color: #888; cursor: pointer; font-size: 18px; display: none; transition: color 0.2s;
+    }
+    .clear-btn:hover { color: #fff; }
+    .search-input { padding-right: 45px; }
+
+    .search-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: 30px auto 50px auto;
+        padding: 0 20px;
+    }
+    .search-form {
+        display: flex;
+        width: 100%;
+        max-width: 700px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        border-radius: 30px;
+    }
+    .search-input {
+        flex: 1;
+        padding: 16px 25px;
+        font-size: 16px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: none;
+        color: white;
+        border-radius: 30px 0 0 30px;
+        outline: none;
+        transition: 0.3s;
+        backdrop-filter: blur(10px);
+    }
+    .search-input:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: #e50914;
+    }
+    .search-btn {
+        padding: 0 35px;
+        background-color: #e50914;
+        color: white;
+        border: none;
+        border-radius: 0 30px 30px 0;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .search-btn:hover {
+        background-color: #f40612;
+    }
+
+    /* Hero Welcome Section */
+    .hero-section {
+        text-align: center;
+        margin-top: 50px;
+        padding: 0 20px;
+    }
+    .hero-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+    }
+    .hero-subtitle {
+        color: #888;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+
+    .ai-btn {
+        background: linear-gradient(90deg, #e50914, #b20710);
+        color: white !important;
+        padding: 10px 24px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+        border: 1px solid transparent;
+    }
+    .ai-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(229, 9, 20, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .movie-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding-bottom: 50px;
+    }
+    .movie-card {
+        width: 200px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        margin-bottom: 15px;
+    }
+    .movie-card:hover {
+        transform: scale(1.08);
+        z-index: 10;
+    }
+    .poster-img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+    }
+    .movie-title {
+        color: #e5e5e5;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 10px;
+        text-align: center;
+        white-space: normal; 
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
+<div class="hero-section">
+    {% if request.user.is_authenticated %}
+        {% if user.date_joined|date:"Y-m-d H:i" == user.last_login|date:"Y-m-d H:i" %}
+            <h1 class="hero-title">
+                Hi, <span style="color: #e50914;">{{ user.username|title }}</span>!
+            </h1>
+            <p class="hero-subtitle">Welcome to your Personal Cinema. Let's find your first favorite movie.</p>
+        {% else %}
+            <h1 class="hero-title">
+                Welcome back, <span style="color: #e50914;">{{ user.username|title }}</span>.
+            </h1>
+            <p class="hero-subtitle">Discover your next favorite movie.</p>
+        {% endif %}
+    {% else %}
+        <h1 class="hero-title">Your Personal Cinema.</h1>
+        <p class="hero-subtitle">Search thousands of movies or sign in for AI recommendations.</p>
+    {% endif %}
+</div>
+
+<div class="search-wrapper">
+    <form class="search-form" method="get" action=''>
+        <div class="search-input-container">
+            <input type="text" id="mainSearchInput" class="search-input" name="q" value="{{ request.GET.q|default_if_none:'' }}" placeholder="Search for movies, genres, or keywords..."/>
+            <span class="clear-btn" id="clearSearchBtn" title="Clear search">&#x2715;</span>
+        </div>
+        <button class="search-btn" type="submit">Search</button>
+    </form>
+</div>
+
+<div style="margin: 0 5%;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+        <h3 style="font-weight: bold; margin: 0; font-size: 1.5rem;">Trending Now</h3>
+        <a href="{% url 'recommend' %}" class="ai-btn"><i class="fa fa-magic" style="margin-right: 8px;"></i>Get AI Recommendations</a>
+    </div>
+    
+    <div class="movie-grid">
+        {% if movies %}
+            {% for movie in movies %}
+                <div class="movie-card">
+                    <a href="{% url 'detail' movie.id %}" style="text-decoration: none;">
+                        {% if movie.poster_url and movie.poster_url != "None" %}
+                            <img src="{{ movie.poster_url }}" 
+                                 class="poster-img" 
+                                 alt="{{ movie.title }}"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/300x450/222222/666666?text=No+Poster';">
+                        {% else %}
+                            <img src="https://placehold.co/300x450/222222/666666?text=No+Poster" 
+                                 class="poster-img" 
+                                 alt="{{ movie.title }}">
+                        {% endif %}
+                        <div class="movie-title">{{movie.title}}</div>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #888; text-align: center; width: 100%; margin-top: 40px;">No movies found matching your search.</p>
+        {% endif %}
+    </div>
+
+    {% if movies.has_other_pages %}
+    <div style="text-align: center; margin: 40px 0;">
+        <span style="color: #888; font-size: 16px;">
+            {% if movies.has_previous %}
+                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="color: white; margin: 0 10px; text-decoration: none;">&laquo; First</a>
+                <a href="?page={{ movies.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="color: #e50914; margin: 0 10px; text-decoration: none; font-weight: bold;">&lsaquo; Previous</a>
+            {% endif %}
+
+            <span style="margin: 0 15px; color: white;">
+                Page {{ movies.number }} of {{ movies.paginator.num_pages }}
+            </span>
+
+            {% if movies.has_next %}
+                <a href="?page={{ movies.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="color: #e50914; margin: 0 10px; text-decoration: none; font-weight: bold;">Next &rsaquo;</a>
+                <a href="?page={{ movies.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="color: white; margin: 0 10px; text-decoration: none;">Last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("mainSearchInput");
+        const clearBtn = document.getElementById("clearSearchBtn");
+
+        if (searchInput && clearBtn) {
+            if (searchInput.value.length > 0) { clearBtn.style.display = "block"; }
+
+            searchInput.addEventListener("input", function() {
+                clearBtn.style.display = this.value.length > 0 ? "block" : "none";
+            });
+
+            clearBtn.addEventListener("click", function() {
+                searchInput.value = "";
+                clearBtn.style.display = "none";
+                searchInput.focus();
+                searchInput.closest('form').submit(); // Submits empty search to reset page
+            });
+        }
+    });
+</script>
+
+{% endblock %}

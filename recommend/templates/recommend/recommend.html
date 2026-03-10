@@ -1,0 +1,114 @@
+{% extends 'recommend/base.html' %}
+{% block body %}
+
+<style>
+    
+    .movie-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding-bottom: 50px; }
+    .movie-card { width: 200px; transition: transform 0.3s ease; cursor: pointer; margin-bottom: 15px; }
+    .movie-card:hover { transform: scale(1.08); z-index: 10; }
+    .poster-img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.8); }
+    
+    .movie-title { 
+        color: #e5e5e5; 
+        font-size: 14px; 
+        font-weight: bold; 
+        margin-top: 10px; 
+        text-align: center; 
+        white-space: normal; 
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .selected-movies-container {
+        display: flex;
+        overflow-x: auto;
+        gap: 12px;
+        padding: 15px 20px;
+        margin: 20px auto;
+        max-width: 90%; 
+        background: #1a1a1a; 
+        border-radius: 8px;
+        -ms-overflow-style: none;  
+        scrollbar-width: none; 
+    }
+    .selected-movies-container::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }
+
+    .movie-pill {
+        white-space: nowrap; 
+        background-color: #333;
+        color: #ddd;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: 1px solid #444;
+        transition: background-color 0.2s ease;
+    }
+    .movie-pill:hover {
+        background-color: #444;
+        color: #fff;
+    }
+</style>
+
+<div style="margin: 0 5%; padding-top: 40px;">
+    
+    <div style="border-bottom: 1px solid #333; padding-bottom: 30px; margin-bottom: 40px; text-align: center;">
+        <h2 style="font-weight: 800; margin: 0; color: #fff;">Top Picks For You</h2>
+        <p style="color: #e50914; font-weight: bold; margin-top: 5px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;">
+            Curated for {{ request.user.username|title }}
+        </p>
+
+        {% if cold_start_warning %}
+            <div style="background-color: rgba(229, 9, 20, 0.1); border: 1px solid #e50914; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; text-align: center;">
+                <i class="fa fa-exclamation-triangle" style="color: #e50914; font-size: 24px; margin-bottom: 10px;"></i>
+                <h4 style="color: #fff; margin-top: 0;">More Data Needed</h4>
+                <p style="color: #bbb; font-size: 15px;">{{ cold_start_warning }}</p>
+                <a href="{% url 'index' %}" class="btn-netflix" style="display: inline-block; margin-top: 15px; text-decoration: none; background-color: #e50914; color: white; padding: 10px 20px; border-radius: 4px;">Go Rate Movies</a>
+            </div>
+        {% endif %}
+        
+        {% if liked_movies %}
+            <div style="max-width: 800px; margin: 0 auto;">
+                <p style="color: #888; font-size: 14px; margin-bottom: 15px;">Recommendations based on your highest ratings for:</p>
+                
+                <div class="selected-movies-container">
+                    {% for liked in liked_movies %}
+                        <span class="movie-pill">
+                            {{ liked.title }}
+                        </span>
+                    {% endfor %}
+                </div>
+                
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="movie-grid">
+        {% if movies %}
+            {% for movie in movies %}
+                <div class="movie-card">
+                    <a href="{% url 'detail' movie.id %}" style="text-decoration: none;">
+                        {% if movie.poster_url and movie.poster_url != "None" %}
+                            <img src="{{ movie.poster_url }}" class="poster-img" alt="{{ movie.title }}" onerror="this.onerror=null; this.src='https://placehold.co/300x450/222222/666666?text=No+Poster';">
+                        {% else %}
+                            <img src="https://placehold.co/300x450/222222/666666?text=No+Poster" class="poster-img" alt="{{ movie.title }}">
+                        {% endif %}
+                        <div class="movie-title">{{movie.title}}</div>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; width: 100%; margin-top: 20px;">
+                <i class="fa fa-film" style="font-size: 40px; color: #444; margin-bottom: 15px;"></i>
+                <p style="color: #888; font-size: 16px;">Our AI needs more data to generate recommendations.<br>Please rate a few movies first!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

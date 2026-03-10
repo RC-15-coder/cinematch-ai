@@ -1,0 +1,79 @@
+{% extends 'recommend/base.html' %}
+{% block body %}
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 75vh;
+        background: radial-gradient(circle at center, #2a0808 0%, #141414 70%);
+        animation: pulseBg 8s infinite alternate ease-in-out;
+    }
+    @keyframes pulseBg {
+        0% { background: radial-gradient(circle at center, #2a0808 0%, #141414 70%); }
+        100% { background: radial-gradient(circle at center, #4a0c0c 0%, #141414 90%); }
+    }
+    .auth-card {
+        background-color: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(10px);
+        padding: 50px 60px 40px;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 450px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    .auth-card h2 { color: white; margin-top: 0; margin-bottom: 25px; font-weight: 700; font-size: 32px; }
+    
+    .auth-card input {
+        width: 100%;
+        background: #333;
+        border: none;
+        border-radius: 4px;
+        padding: 14px 20px;
+        color: white;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+        font-size: 15px;
+        transition: 0.2s;
+    }
+    .auth-card input:focus { outline: none; background: #444; border-bottom: 2px solid #e50914; }
+    .auth-card label { color: #aaa; font-size: 14px; display: block; margin-bottom: 5px; }
+    .auth-card ul { color: #e87c03; padding-left: 20px; font-size: 13px; }
+    
+    .modern-btn {
+        width: 100%;
+        padding: 16px;
+        background: #e50914;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background 0.2s;
+    }
+    .modern-btn:hover { background: #f40612; }
+    .auth-links { color: #737373; margin-top: 25px; font-size: 15px; text-align: center;}
+    .auth-links a { color: white; text-decoration: none; }
+    .auth-links a:hover { text-decoration: underline; }
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Create Account</h2>
+        
+        <form method="post" action="">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <button type="submit" class="modern-btn">Sign Up</button>
+        </form>
+        
+        <div class="auth-links">
+            Already have an account? <a href="{% url 'login' %}">Log in here.</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

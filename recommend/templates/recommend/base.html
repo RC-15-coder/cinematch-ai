@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Movie Recommender{% endblock %}</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+
+body {
+    background-color: #111; /* Fallback dark background */
+    position: relative;
+    z-index: 0;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 50% 30%, rgba(229, 9, 20, 0.12) 0%, rgba(17, 17, 17, 1) 70%);
+    z-index: -1; 
+    pointer-events: none; 
+    
+    animation: cinematicPulse 8s infinite alternate ease-in-out;
+}
+
+@keyframes cinematicPulse {
+    0% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+        body {
+            background-color: #141414;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        
+        .modern-navbar {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           padding: 20px 5%;
+           background-color: #141414; 
+    border-bottom: 1px solid #222; /* Adds a clean separator line */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+        .nav-brand {
+            font-size: 24px;
+            font-weight: 800;
+            color: #e50914; 
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        
+        .nav-brand:hover {
+            color: #e50914;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #e5e5e5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ffffff;
+        }
+
+        .nav-auth-btn {
+            background-color: #e50914;
+            color: white !important;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .nav-auth-btn:hover {
+            background-color: #f40612;
+        }
+
+        /* Clean Footer */
+        .modern-footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+            font-size: 14px;
+            margin-top: 50px;
+            border-top: 1px solid #222;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="modern-navbar">
+        <a href="{% url 'index' %}" class="nav-brand">CineMatch AI</a>
+        
+        <div class="nav-links">
+            <a href="{% url 'index' %}">Home</a>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'watch' %}">My List</a>
+                <a href="{% url 'logout' %}" class="nav-auth-btn">Logout</a>
+            {% else %}
+                <a href="{% url 'signup' %}">Sign Up</a>
+                <a href="{% url 'login' %}" class="nav-auth-btn">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div style="min-height: 70vh;">
+        {% block body %}
+        {% endblock %}
+    </div>
+
+    <footer style="text-align: center; padding: 40px 20px; margin-top: 50px; border-top: 1px solid #222;">
+        <div style="margin-bottom: 15px;">
+            <a href="https://www.linkedin.com/in/raghavchandna/" target="_blank" rel="noopener noreferrer" style="color: #888; font-size: 24px; margin: 0 15px; text-decoration: none; transition: color 0.2s;">
+                <i class="fa fa-linkedin"></i>
+            </a>
+            
+            <a href="https://github.com/RC-15-coder" target="_blank" rel="noopener noreferrer" style="color: #888; font-size: 24px; margin: 0 15px; text-decoration: none; transition: color 0.2s;">
+                <i class="fa fa-github"></i>
+            </a>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 0; letter-spacing: 0.5px;">
+            &copy; 2026 Raghav Chandna. All rights reserved.
+        </p>
+    </footer>
+
+</body>
+</html>

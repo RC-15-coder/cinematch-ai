@@ -1,0 +1,11 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+*.md
+scripts/
+ml-100k/
+reports/
+db_backup.sqlite3

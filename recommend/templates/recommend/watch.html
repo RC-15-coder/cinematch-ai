@@ -1,0 +1,106 @@
+{% extends 'recommend/base.html' %}
+{% block body %}
+
+<style>
+    .movie-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding-bottom: 50px;
+    }
+    .movie-card {
+        width: 200px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        margin-bottom: 15px;
+    }
+    .movie-card:hover {
+        transform: scale(1.08);
+        z-index: 10;
+    }
+    .poster-img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+    }
+    .movie-title {
+        color: #e5e5e5;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 10px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Modern Empty State */
+    .empty-state {
+        text-align: center;
+        margin-top: 100px;
+        padding: 40px;
+    }
+    .empty-icon {
+        font-size: 60px;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .browse-btn {
+        display: inline-block;
+        background-color: #e50914;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 25px;
+        transition: 0.2s;
+    }
+    .browse-btn:hover {
+        background-color: #f40612;
+        color: white;
+        text-decoration: none;
+    }
+</style>
+
+<div style="margin: 0 5%; padding-top: 40px;">
+    
+    <div style="border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 30px;">
+        <h2 style="font-weight: 800; margin: 0;">My Watchlist</h2>
+    </div>
+
+    {% if movies %}
+        <div class="movie-grid">
+            {% for movie in movies %}
+                <div class="movie-card">
+                    <a href="{% url 'detail' movie.id %}" style="text-decoration: none;">
+                        {% if movie.poster_url and movie.poster_url != "None" %}
+                            <img src="{{ movie.poster_url }}" 
+                                 class="poster-img" 
+                                 alt="{{ movie.title }}"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/300x450/222222/666666?text=No+Poster';">
+                        {% else %}
+                            <img src="https://placehold.co/300x450/222222/666666?text=No+Poster" 
+                                 class="poster-img" 
+                                 alt="{{ movie.title }}">
+                        {% endif %}
+                        <div class="movie-title">{{movie.title}}</div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fa fa-film empty-icon"></i>
+            <h3 style="color: #e5e5e5; font-weight: 600;">Your list is currently empty.</h3>
+            <p style="color: #888; max-width: 400px; margin: 10px auto;">Explore our library of thousands of titles and add your favorites to keep track of what to watch next.</p>
+            <a href="{% url 'index' %}" class="browse-btn">Browse Movies</a>
+        </div>
+    {% endif %}
+    
+</div>
+
+{% endblock %}
