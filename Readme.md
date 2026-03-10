@@ -6,7 +6,7 @@
 [![Django](https://img.shields.io/badge/Django-Web_Framework-092E20.svg)](https://www.djangoproject.com/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED.svg)](https://www.docker.com/)
 
-An end-to-end machine learning recommender system built with **PyTorch** and **Django**. Features a custom-trained Matrix Factorization model using the MovieLens dataset, evaluated with production-grade ranking metrics, and deployed to the cloud via Docker on Hugging Face Spaces.
+An end-to-end machine learning recommender system built with **PyTorch** and **Django**. Features a custom-trained Matrix Factorization model using the MovieLens dataset, rigorously evaluated with production-grade ranking metrics, and deployed to the cloud via Docker on Hugging Face Spaces.
 
 **[🚀 Try the Live App Here](https://rc-15-cinematch-ai.hf.space)**
 
@@ -101,6 +101,6 @@ On smaller genre clusters such as Romance, pure Collaborative Filtering occasion
 
 ## 🚀 Deployment
 
-Containerized with Docker and deployed on **Hugging Face Spaces** (free tier, 16GB RAM).
+Containerized with Docker and deployed on **Hugging Face Spaces**.
 
 > ⚠️ The free tier sleeps after 48 hours of inactivity. First load after sleep takes ~30–60 seconds.
