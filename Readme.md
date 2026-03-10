@@ -1,88 +1,106 @@
-# Django based movie recommender system
-> https://awesome-movie-recommender.herokuapp.com
+# 🎬 CineMatch AI — Movie Recommender System
 
-![GitHub stars](https://img.shields.io/github/stars/rajaprerak/movie_recommender) 
-[![Maintenance](https://img.shields.io/badge/maintained-yes-green.svg)](https://github.com/rajaprerak/movie_recommender/commits/master)
-[![Website shields.io](https://img.shields.io/badge/website-up-yellow)](https://awesome-movie-recommender.herokuapp.com/)
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Hugging_Face-yellow.svg)](https://rc-15-cinematch-ai.hf.space)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-ML_Pipeline-EE4C2C.svg)](https://pytorch.org/)
+[![Django](https://img.shields.io/badge/Django-Web_Framework-092E20.svg)](https://www.djangoproject.com/)
+[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED.svg)](https://www.docker.com/)
 
-### Website Preview
-#### Home Page
-<img src="website_images/HomePage.png" width="900">
+An end-to-end machine learning recommender system built with **PyTorch** and **Django**. Features a custom-trained Matrix Factorization model using the MovieLens dataset, evaluated with production-grade ranking metrics, and deployed to the cloud via Docker on Hugging Face Spaces.
 
-#### Detail Page
-<img src="website_images/DetailPage.png" width="900">
+**[🚀 Try the Live App Here](https://rc-15-cinematch-ai.hf.space)**
 
-----
+---
 
-## Installation 📦
+## 🧠 Machine Learning Architecture
 
->pip install -r requirements.txt
+The recommendation engine uses **Matrix Factorization with learned embeddings** — the same foundational approach used by Netflix and Spotify.
 
-#### Clone
+- **Algorithm:** PyTorch Matrix Factorization with User/Movie Embeddings + Bias terms + Global Mean Normalization
+- **Dataset:** `ml-latest-small` MovieLens dataset (~100K ratings), filtered to movies with 25+ ratings for embedding stability
+- **Inference:** Cosine Similarity on learned movie embeddings to build a user taste profile at runtime
+- **Cold Start Handling:** Users must rate a minimum threshold of movies before recommendations activate
 
-- Clone this repo to your local machine.
+### 📊 Evaluation Metrics
 
-#### Run server locally
+| Metric | Score | Benchmark |
+|--------|-------|-----------|
+| RMSE | **0.9213** | Production range: 0.85–0.95 |
+| MAE | **0.7231** | — |
+| Hit Rate@12 | **81.71%** | Typical MF range: 30–50% |
+| Precision@12 | **24.66%** | — |
+| Recall@12 | **33.49%** | — |
 
-```shell
-$ python manage.py runserver
+> **Note:** Evaluation used Candidate Sampling (99 negatives per user) with a strict train/test split to prevent data leakage. Global Mean was calculated exclusively on training data.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Machine Learning:** PyTorch, NumPy, Pandas, Scikit-Learn
+- **Backend:** Django 4.2, SQLite, Gunicorn
+- **Frontend:** HTML5, CSS3, JavaScript (jQuery), Bootstrap, Django Templates
+- **Deployment:** Docker, Hugging Face Spaces, WhiteNoise
+
+---
+
+## 📂 Project Structure
+```text
+├── Dockerfile                      # Production containerization
+├── requirements.txt                # All dependencies
+├── manage.py                       # Django entry point
+├── movie_recommender/              # Django project settings & routing
+├── recommend/                      # App logic, models, views, ML service
+│   └── ml_service.py               # PyTorch inference + cosine similarity
+├── scripts/
+│   ├── train_recommender.py        # PyTorch training pipeline
+│   ├── evaluate_model.py           # RMSE, MAE, HitRate, Precision, Recall
+│   ├── eval.py                     # Supplementary evaluation script
+│   └── eval_cosine.py              # Cosine similarity vector evaluation
+└── ml_models/
+    ├── recommender_weights.pth     # Trained PyTorch model weights
+    └── mappings.pkl                # User/Movie ID mappings + global mean
 ```
-> Go to localhost:8000
 
 ---
-## Features 📋
-* User can register and login.
-* User can search through various movies and look through its details.
-* User can give rating to the movies.
-* User can add movie to their watch list.
-* User can get movie recommendation (Recommendation algorithm (Collaborative Filtering) which suggests new movies based on the ratings given by user.)
+
+## 💻 Running Locally
+```bash
+# 1. Clone and setup
+git clone https://github.com/RC-15-dev/cinematch-ai.git
+cd cinematch-ai
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+
+# 2. Download dataset
+# Download ml-latest-small.zip from https://grouplens.org/datasets/movielens/
+# Extract into ml_data/ml-latest-small/
+
+# 3. Train the model
+python scripts/train_recommender.py
+
+# 4. Evaluate
+python scripts/evaluate_model.py
+
+# 5. Run the server
+python manage.py runserver
+```
+
 ---
 
-## Algorithm
-##### Collabortive Filtering (Recommender Algorithm)
-* Collaborative filtering filters information by using the interactions and data collected by the system from other users. It's based on the idea that people who agreed in their evaluation of certain items are likely to agree again in the future.
-* When we want to find a new movie to watch we'll often ask our friends for recommendations. Naturally, we have greater trust in the recommendations from friends who share tastes similar to our own.
-* Collaborative-filtering systems focus on the relationship between users and items. The similarity of items is determined by the similarity of the ratings of those items by the users who have rated both items.
-* There are two types of collaborative filtering
-    * **User-based**, which measures the similarity between target users and other users.
-    * **Item-based**, which measures the similarity between the items that target users rate or interact with and other items.
-    > I have used **user based** collaborative filtering in this project.
-     
-     
-  ---
+## 🏗️ Architecture Decisions & Limitations
 
-## Contributing 💡
+**Why Cosine Similarity instead of raw predictions?**
+The model uses unbounded dot products during training for stable gradient flow. At inference time, Cosine Similarity on the learned embeddings provides superior ranking quality — this is why Hit Rate (81.71%) is strong despite the model not being optimized purely for rating prediction.
 
+**Known limitation:**
+On smaller genre clusters such as Romance, pure Collaborative Filtering occasionally surfaces cross-genre recommendations due to viewing pattern overlap in the dataset. A Content-Based filtering layer using genre metadata would address this in a production system — a deliberate architectural trade-off given the dataset size.
 
-#### Step 1
+---
 
-- **Option 1**
-    - 🍴 Fork this repo!
+## 🚀 Deployment
 
-- **Option 2**
-    - 👯 Clone this repo to your local machine.
+Containerized with Docker and deployed on **Hugging Face Spaces** (free tier, 16GB RAM).
 
-
-#### Step 2
-
-- **Build your code** 🔨🔨🔨
-
-#### Step 3
-
-- 🔃 Create a new pull request.
-
-## Team ✨
-
-| <a href="https://rajaprerak.github.io" target="_blank">**Prerak Raja**</a>
-| :---: |
-| [![Prerak Raja](https://github.com/rajaprerak.png?size=100)](https://rajaprerak.github.io)    
-| <a href="https://github.com/rajaprerak" target="_blank">`github.com/rajaprerak`</a>
-
-
-## License
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
-
-- **[MIT license](http://opensource.org/licenses/mit-license.php)**
-
-                                                                                                                                                                                                                                                                        
+> ⚠️ The free tier sleeps after 48 hours of inactivity. First load after sleep takes ~30–60 seconds.
